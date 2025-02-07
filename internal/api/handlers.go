@@ -41,7 +41,7 @@ var (
 		if len(receipt.Items) == 0 {
 			return fmt.Errorf("at least one item is required")
 		}
-		
+
 		var sum float64
 		for i, item := range receipt.Items {
 			if strings.TrimSpace(item.ShortDescription) == "" {
@@ -52,17 +52,17 @@ var (
 			}
 			sum += item.ParsedPrice
 		}
-		
+
 		if diff := receipt.ParsedTotal - sum; diff < -0.01 || diff > 0.01 {
 			return fmt.Errorf("total %.2f does not match sum of items %.2f", receipt.ParsedTotal, sum)
 		}
-		
+
 		return nil
 	}
 )
 
-// ProcessReceipt handles the POST /receipts/process endpoint. It accepts a JSON receipt 
-// in the request body and returns a JSON response with the receipt ID and points awarded
+// ProcessReceipt handles the POST /receipts/process endpoint. It accepts a JSON receipt
+// in the request body and returns a JSON response with the receipt ID
 func (h *Handler) ProcessReceipt(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		sendErrorResponse(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -93,9 +93,8 @@ func (h *Handler) ProcessReceipt(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	if err := json.NewEncoder(w).Encode(map[string]interface{}{
-		"id":     id,
-		"points": points,
+	if err := json.NewEncoder(w).Encode(map[string]string{
+		"id": id,
 	}); err != nil {
 		fmt.Printf("Error encoding response: %v\n", err)
 		sendErrorResponse(w, "Error generating response", http.StatusInternalServerError)
@@ -103,7 +102,7 @@ func (h *Handler) ProcessReceipt(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// GetPoints handles the GET /receipts/{id}/points endpoint. It extracts the receipt ID 
+// GetPoints handles the GET /receipts/{id}/points endpoint. It extracts the receipt ID
 // from the URL path and returns the points awarded for that receipt
 func (h *Handler) GetPoints(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
@@ -113,7 +112,7 @@ func (h *Handler) GetPoints(w http.ResponseWriter, r *http.Request) {
 
 	path := strings.TrimPrefix(r.URL.Path, "/receipts/")
 	id := strings.TrimSuffix(path, "/points")
-	
+
 	if id == "" || id == path {
 		sendErrorResponse(w, "Invalid receipt ID format", http.StatusBadRequest)
 		return

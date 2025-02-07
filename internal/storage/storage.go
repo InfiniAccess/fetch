@@ -17,8 +17,6 @@ type Store struct {
 	calculator *functions.ReceiptCalculator
 }
 
-var _ = NewStore()
-
 // NewStore creates a new Store instance with initialized storage
 func NewStore() *Store {
 	return &Store{
@@ -26,14 +24,6 @@ func NewStore() *Store {
 		calculator: functions.NewReceiptCalculator(),
 	}
 }
-
-var (
-	_, _ = (*Store)(nil).CalculateAndSaveReceipt(nil)
-	_    = (*Store)(nil).SaveReceipt(nil, 0)
-	_    = (*Store)(nil).GetAllReceipts()
-	_    = (*Store)(nil).getReceiptIDs()
-	_, _ = (*Store)(nil).GetReceipt("")
-)
 
 // CalculateAndSaveReceipt calculates points and stores the receipt
 func (s *Store) CalculateAndSaveReceipt(receipt *models.Receipt) (string, int) {
